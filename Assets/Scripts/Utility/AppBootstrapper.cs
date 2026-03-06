@@ -29,8 +29,8 @@ public class AppBootstrapper : MonoBehaviour
     /// </summary>
     private void InitializeApp()
     {
-        // ⓪ 프레임 제한 (60FPS) 및 마우스 커서 표시 여부 제어
-        Application.targetFrameRate = 60;
+        // ⓪ 프레임 제한 및 마우스 커서 표시 여부 제어
+        Application.targetFrameRate = AppConfig.TargetFrameRate;
         Cursor.visible = !AppConfig.HideMouseCursor;
 
         // ① CSVReader는 DefaultExecutionOrder(-1000)으로 이미 Awake에서 로드 완료

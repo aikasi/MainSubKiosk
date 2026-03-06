@@ -61,6 +61,9 @@ public static class AppConfig
     /// <summary>마우스 커서 화면 숨김 여부</summary>
     public static bool HideMouseCursor => CSVReader.GetStringValue("Hide_Mouse_Cursor", "true").ToLowerInvariant() == "true";
 
+    /// <summary>목표 프레임 제한 (기본 60)</summary>
+    public static int TargetFrameRate => CSVReader.GetIntValue("Target_Frame_Rate", 60);
+
     /// <summary>인식할 이미지 확장자 (세미콜론 구분)</summary>
     public static string ImageExtensions => CSVReader.GetStringValue("Image_Extensions", ".png;.jpg;.jpeg");
 

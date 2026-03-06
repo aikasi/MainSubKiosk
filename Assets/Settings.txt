@@ -1,6 +1,7 @@
 Idle_Timeout,60,화면 터치가 없을 때 메인 화면으로 돌아가는 시간 (초 단위)
 Transition_Speed,0.5,버튼을 누르거나 화면이 전환될 때의 애니메이션 속도 (초 단위)
 Resolution,1920x1080,프로그램이 실행될 때의 전체 화면 해상도 
+Target_Frame_Rate,60,앱의 최대 프레임 속도 제한 (기본 60, 높을수록 부드럽지만 PC 부하 증가)
 Show_Error_Popup,true,프로그램을 켤 때 이미지가 없으면 경고창을 띄울지 여부 (true/false)
 Show_Runtime_Error_Popup,true,사용 중에 에러가 나면 화면에 경고창을 띄울지 여부 (true/false)
 Hide_Mouse_Cursor,true,마우스 커서를 화면에 보이지 않게 숨길지 여부 (true/false) (터치는 정상 작동)

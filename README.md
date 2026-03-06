@@ -23,10 +23,10 @@ MainSubKiosk/
 │   ├── Settings.txt                  ← 런타임 설정 파일 (에디터용)
 │   ├── StreamingAssets/
 │   │   └── Content_MainSubKiosk/     ← 이미지 리소스 폴더
-│   │       ├── 0000-BTN.png          ← 주요법령 버튼 이미지 (그리드 외부 전용)
-│   │       ├── 0000-PAGE.png         ← 주요법령 상세 페이지 이미지
-│   │       ├── 0001-BTN.png          ← 버튼 이미지
-│   │       ├── 0001-PAGE.png         ← 상세 페이지 이미지
+│   │       ├── 0000-btn.png          ← 주요법령 버튼 이미지 (그리드 외부 전용)
+│   │       ├── 0000-page.png         ← 주요법령 상세 페이지 이미지
+│   │       ├── 0001-btn.png          ← 버튼 이미지
+│   │       ├── 0001-page.png         ← 상세 페이지 이미지
 │   │       └── ...
 │   ├── Scripts/
 │   │   ├── Core/                     ← 핵심 시스템
@@ -55,8 +55,8 @@ MainSubKiosk/
 | `Show_Runtime_Error_Popup` | `true`                  | 사용 중 에러 발생 시 팝업 표시 여부                                                                      |
 | `Hide_Mouse_Cursor`        | `true`                  | 마우스 커서를 화면에 표시할지 숨길지 여부 (터치는 정상 작동)                                             |
 | `Image_Extensions`         | `.png;.jpg;.jpeg`       | 인식할 이미지 확장자 (`;` 구분)                                                                        |
-| `Exclude_Grid_Buttons`     | `0000-BTN`              | 주요 법령 버튼설정(주요법령의 버튼이름을 넣으면 됩니다.) : 그리드에 자동 생성하지 않을 버튼 (`;` 구분) |
-| `Required_Buttons`         | `0000-BTN;0001-BTN;...` | 반드시 존재해야 하는 필수 버튼 (`;` 구분, 비우면 검사 안 함)                                           |
+| `Exclude_Grid_Buttons`     | `0000-btn`              | 주요 법령 버튼설정(주요법령의 버튼이름을 넣으면 됩니다.) : 그리드에 자동 생성하지 않을 버튼 (`;` 구분) |
+| `Required_Buttons`         | `0000-btn;0001-btn;...` | 반드시 존재해야 하는 필수 버튼 (`;` 구분, 비우면 검사 안 함)                                           |
 
 ---
 
@@ -66,10 +66,10 @@ MainSubKiosk/
 
 | 파일명 패턴       | 역할                            | 예시              |
 | ----------------- | ------------------------------- | ----------------- |
-| `XXXX-BTN.png`  | 메인 화면의 버튼 이미지         | `0001-BTN.png`  |
-| `XXXX-PAGE.png` | 버튼 클릭 시 열리는 상세 페이지 | `0001-PAGE.png` |
+| `XXXX-btn.png`  | 메인 화면의 버튼 이미지         | `0001-btn.png`  |
+| `XXXX-page.png` | 버튼 클릭 시 열리는 상세 페이지 | `0001-page.png` |
 
-- **BTN과 PAGE는 반드시 쌍**으로 존재해야 합니다 (예: `0001-BTN` ↔ `0001-PAGE`)
+- **btn과 page는 반드시 쌍**으로 존재해야 합니다 (예: `0001-btn` ↔ `0001-page`)
 - 대소문자를 구분하지 않습니다 (`btn` = `BTN` = `Btn`)
 - 파일을 추가/삭제하면 다음 실행 시 자동 반영됩니다
 
@@ -83,7 +83,7 @@ MainSubKiosk/
 | ------------------------ | ------------------------------------------------- |
 | `AppConfig.cs`         | 앱 ID 및 콘텐츠 폴더 경로 정의 (빌드 분기 지원)   |
 | `ResourcePathCache.cs` | 콘텐츠 폴더를 스캔하여 파일명 → 경로 매핑을 캐싱 |
-| `IntegrityChecker.cs`  | 필수 버튼 존재 여부 + BTN↔PAGE 짝꿍 검사         |
+| `IntegrityChecker.cs`  | 필수 버튼 존재 여부 + btn↔page 짝꿍 검사         |
 
 ### Page (화면 전환)
 
@@ -144,12 +144,12 @@ MainSubKiosk/
 
 ```
 Assets/StreamingAssets/Content_MainSubKiosk/
-├── 0000-BTN.png    ← 주요법령 버튼 : 그리드 외부 전용 버튼
-├── 0000-PAGE.png   ← 주요법령 이미지
-├── 0001-BTN.png    ←  버튼 1 이미지
-├── 0001-PAGE.png
-├── 0002-BTN.png    ← 버튼 2 이미지
-├── 0002-PAGE.png
+├── 0000-btn.png    ← 주요법령 버튼 : 그리드 외부 전용 버튼
+├── 0000-page.png   ← 주요법령 이미지
+├── 0001-btn.png    ←  버튼 1 이미지
+├── 0001-page.png
+├── 0002-btn.png    ← 버튼 2 이미지
+├── 0002-page.png
 └── ...
 ```
 
@@ -159,7 +159,7 @@ Assets/StreamingAssets/Content_MainSubKiosk/
 
 ### 3. Unity 실행
 
-Unity Editor에서 Play 버튼 클릭 → 자동으로 이미지를 스캔하여 버튼 생성
+실행 클릭 → 자동으로 이미지를 스캔하여 버튼 생성
 
 ### 4. 빌드
 
@@ -171,7 +171,7 @@ Unity Editor에서 Play 버튼 클릭 → 자동으로 이미지를 스캔하여
 
 그리드 밖에 별도로 배치된 버튼(예: 주요법령 버튼)은 **Settings.txt만으로 관리**됩니다:
 
-1. `Settings.txt`의 `Exclude_Grid_Buttons`에 해당 버튼 키를 등록 (예: `0000-BTN`)
+1. `Settings.txt`의 `Exclude_Grid_Buttons`에 해당 버튼 키를 등록 (예: `0000-btn`)
 2. 스크립트가 자동으로 해당 키의 이미지를 로딩하고 페이지 팝업 이벤트를 연결
 
-> Inspector에서 별도로 키를 입력할 필요 없이, Settings.txt 하나에서 전부 관리됩니다.
+>  별도로 키를 입력할 필요 없이, Settings.txt 에서 관리됩니다.

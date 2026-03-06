@@ -1,0 +1,88 @@
+# =====================
+# Unity .gitignore
+# =====================
+
+# Unity 자동 생성 폴더
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# MemoryCaptures
+/[Mm]emoryCaptures/
+
+# 빌드 결과물
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# 빌드 디버그 정보 (배포 시 불필요)
+*_BurstDebugInformation_DoNotShip/
+
+# Asset Store 캐시
+/[Aa]ssets/AssetStoreTools*
+
+# 콘텐츠 이미지 (현장별로 다르므로 git에 포함하지 않음)
+/[Aa]ssets/StreamingAssets/Content_*/
+
+# =====================
+# IDE / 에디터
+# =====================
+
+# Visual Studio
+.vs/
+*.csproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# JetBrains Rider
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
+
+# =====================
+# OS 시스템 파일
+# =====================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =====================
+# 기타
+# =====================
+
+# Crash reports
+crashlytics-build.properties
+sysinfo.txt
+
+# Plastic SCM
+*.ignore
+*.private
+*.private.meta
+
+# Gemini AI 작업 파일
+.gemini/

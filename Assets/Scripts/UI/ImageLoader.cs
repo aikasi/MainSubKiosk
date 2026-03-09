@@ -32,8 +32,16 @@ public class ImageLoader : MonoBehaviour
         byte[] fileData;
         try
         {
-            // 백그라운드 스레드에서 파일 읽기
-            fileData = await Task.Run(() => File.ReadAllBytes(filePath));
+            // 백그라운드 스레드에서 파일 읽기 (동시 접근을 위해 FileShare.Read 강제)
+            fileData = await Task.Run(() =>
+            {
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    byte[] buffer = new byte[fs.Length];
+                    fs.Read(buffer, 0, (int)fs.Length);
+                    return buffer;
+                }
+            });
         }
         catch (System.Exception ex)
         {

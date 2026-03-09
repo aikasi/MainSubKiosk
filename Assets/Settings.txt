@@ -8,3 +8,7 @@ Hide_Mouse_Cursor,true,마우스 커서를 화면에 보이지 않게 숨길지 
 Image_Extensions,.png;.jpg;.jpeg,인식할 이미지 파일의 확장자들 (세미콜론으로 구분)
 Exclude_Grid_Buttons,0000-btn,주요법령 버튼 이름 : 기본 그리드 화면 안에 자동으로 생성하지 않을 예외 버튼 이름 목록 (세미콜론으로 구분) : 
 Required_Buttons,0000-btn;0001-btn~0006-btn,무조건 폴더에 있어야 하는 필수 버튼 이름 목록 (세미콜론 구분) : 범위로 지정하고 싶을 때는 '~' 사용
+
+MediaTable_Btn_Path,Content_MediaTable,미디어 테이블용 [메인 썸네일 버튼] 이미지 폴더 경로 (기본값: Content_MediaTable)
+MediaTable_Page_Path,Content_MediaTable,미디어 테이블용 [상세 책 속지] 이미지 폴더 경로 (기본값: Content_MediaTable)
+

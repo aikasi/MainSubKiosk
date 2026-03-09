@@ -289,15 +289,15 @@ public class Book : MonoBehaviour {
         Left.rectTransform.pivot = new Vector2(0, 0);
         Left.transform.position = RightNext.transform.position;
         Left.transform.eulerAngles = new Vector3(0, 0, 0);
-        Left.sprite = (currentPage < bookPages.Length) ? bookPages[currentPage] : background;
+        Left.sprite = GetSprite(currentPage);
         Left.transform.SetAsFirstSibling();
         
         Right.gameObject.SetActive(true);
         Right.transform.position = RightNext.transform.position;
         Right.transform.eulerAngles = new Vector3(0, 0, 0);
-        Right.sprite = (currentPage < bookPages.Length - 1) ? bookPages[currentPage + 1] : background;
+        Right.sprite = GetSprite(currentPage + 1);
 
-        RightNext.sprite = (currentPage < bookPages.Length - 2) ? bookPages[currentPage + 2] : background;
+        RightNext.sprite = GetSprite(currentPage + 2);
 
         LeftNext.transform.SetAsFirstSibling();
         if (enableShadowEffect) Shadow.gameObject.SetActive(true);
@@ -321,7 +321,7 @@ public class Book : MonoBehaviour {
 
         Right.gameObject.SetActive(true);
         Right.transform.position = LeftNext.transform.position;
-        Right.sprite = bookPages[currentPage - 1];
+        Right.sprite = GetSprite(currentPage - 1);
         Right.transform.eulerAngles = new Vector3(0, 0, 0);
         Right.transform.SetAsFirstSibling();
 
@@ -329,9 +329,9 @@ public class Book : MonoBehaviour {
         Left.rectTransform.pivot = new Vector2(1, 0);
         Left.transform.position = LeftNext.transform.position;
         Left.transform.eulerAngles = new Vector3(0, 0, 0);
-        Left.sprite = (currentPage >= 2) ? bookPages[currentPage - 2] : background;
+        Left.sprite = GetSprite(currentPage - 2);
 
-        LeftNext.sprite = (currentPage >= 3) ? bookPages[currentPage - 3] : background;
+        LeftNext.sprite = GetSprite(currentPage - 3);
 
         RightNext.transform.SetAsFirstSibling();
         if (enableShadowEffect) ShadowLTR.gameObject.SetActive(true);
@@ -364,10 +364,17 @@ public class Book : MonoBehaviour {
         }
     }
     Coroutine currentCoroutine;
+    public Sprite GetSprite(int index)
+    {
+        if (bookPages != null && index >= 0 && index < bookPages.Length)
+            return bookPages[index];
+        return background;
+    }
+
     void UpdateSprites()
     {
-        LeftNext.sprite= (currentPage > 0 && currentPage <= bookPages.Length) ? bookPages[currentPage-1] : background;
-        RightNext.sprite=(currentPage>=0 &&currentPage<bookPages.Length) ? bookPages[currentPage] : background;
+        LeftNext.sprite = GetSprite(currentPage - 1);
+        RightNext.sprite = GetSprite(currentPage);
     }
     public void TweenForward()
     {

@@ -2,6 +2,11 @@
 
 키오스크 전용 이미지 갤러리 앱 — 버튼을 누르면 상세 페이지가 팝업으로 열리는 터치 기반 디지털 안내 시스템
 
+
+### **C. 3-2-2 , 3-2-1 진행 상황**
+
+[https://www.notion.so/C-3-2-2-3-2-1-31e8a32f6b6880ebaa3be9c595b60eaa?source=copy_link]([https://www.notion.so/C-3-2-2-3-2-1-31e8a32f6b6880ebaa3be9c595b60eaa?source=copy_link]())
+
 ---
 
 ## 📋 프로젝트 개요
@@ -174,4 +179,4 @@ Assets/StreamingAssets/Content_MainSubKiosk/
 1. `Settings.txt`의 `Exclude_Grid_Buttons`에 해당 버튼 키를 등록 (예: `0000-btn`)
 2. 스크립트가 자동으로 해당 키의 이미지를 로딩하고 페이지 팝업 이벤트를 연결
 
->  별도로 키를 입력할 필요 없이, Settings.txt 에서 관리됩니다.
+> 별도로 키를 입력할 필요 없이, Settings.txt 에서 관리됩니다.

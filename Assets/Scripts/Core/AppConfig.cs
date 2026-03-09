@@ -9,8 +9,8 @@ public static class AppConfig
     public const string AppID = "MainSubKiosk";
 #elif APP_B
     public const string AppID = "APP_B";       // 가칭 — 추후 변경 예정
-#elif APP_C
-    public const string AppID = "APP_C";       // 가칭 — 추후 변경 예정
+#elif MEDIA_TABLE
+    public const string AppID = "MediaTable";
 #else
     public const string AppID = "MainSubKiosk"; // 기본값: 심볼 미지정 시 MainSubKiosk
 #endif

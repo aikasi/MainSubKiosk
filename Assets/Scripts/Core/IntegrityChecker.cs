@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -40,13 +41,11 @@ public class IntegrityChecker : MonoBehaviour
             return false;
         }
 
-        //  1. 사용자 필수 버튼 명단 가져와서 최우선으로 검사
+        // 1. 사용자 필수 버튼 명단 가져와서 최우선으로 검사
         string requiredRaw = AppConfig.RequiredButtons;
         if (!string.IsNullOrWhiteSpace(requiredRaw))
         {
-            var requiredKeys = requiredRaw.Split(';')
-                .Select(k => k.Trim())
-                .Where(k => !string.IsNullOrEmpty(k));
+            var requiredKeys = ParseRequiredKeys(requiredRaw);
 
             foreach (string reqKey in requiredKeys)
             {
@@ -106,6 +105,80 @@ public class IntegrityChecker : MonoBehaviour
         }
 
         return errorCount == 0;
+    }
+
+    /// <summary>
+    /// Required_Buttons 설정열을 파싱하여 실제 검사해야 할 버튼 키 목록을 반환합니다.
+    /// 범위 기호(~)를 지원합니다. (예: "0001~0005" -> "0001-BTN", ... "0005-BTN")
+    /// </summary>
+    private IEnumerable<string> ParseRequiredKeys(string rawInput)
+    {
+        var result = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+
+        var segments = rawInput.Split(';')
+            .Select(s => s.Trim())
+            .Where(s => !string.IsNullOrEmpty(s));
+
+        foreach (var segment in segments)
+        {
+            if (segment.Contains("~"))
+            {
+                // 범위 지정 (예: "0001~0005" 또는 "0001-btn~0005-btn")
+                var parts = segment.Split('~');
+                if (parts.Length == 2)
+                {
+                    string startRaw = parts[0].Trim();
+                    string endRaw = parts[1].Trim();
+
+                    // "-btn" 꼬리가 붙어있을 수 있으므로 제거 후 파싱
+                    string startNumStr = startRaw.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase)
+                        ? startRaw.Substring(0, startRaw.Length - 4) : startRaw;
+                    string endNumStr = endRaw.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase)
+                        ? endRaw.Substring(0, endRaw.Length - 4) : endRaw;
+
+                    if (int.TryParse(startNumStr, out int startNum) && int.TryParse(endNumStr, out int endNum))
+                    {
+                        // 역순 입력 대응 (예: 0005~0001)
+                        int min = Mathf.Min(startNum, endNum);
+                        int max = Mathf.Max(startNum, endNum);
+                        
+                        // 원본 포맷팅 형태("0001"이면 4자리) 유지 목적
+                        int padLength = startNumStr.Length;
+
+                        for (int i = min; i <= max; i++)
+                        {
+                            result.Add($"{i.ToString($"D{padLength}")}-BTN");
+                        }
+                    }
+                    else
+                    {
+                        string warnMsg = $"필수 버튼 범위 설정 오류: '{segment}'는 올바른 숫자 범위가 아닙니다.(문자 포함 의심)";
+                        Debug.LogWarning($"[WARN] {warnMsg}");
+                        if (errorPopup != null) errorPopup.AddError(warnMsg);
+                    }
+                }
+                else
+                {
+                    string warnMsg = $"필수 버튼 범위 설정 오류: '{segment}' 형식이 잘못되었습니다. (예: 0001~0005)";
+                    Debug.LogWarning($"[WARN] {warnMsg}");
+                    if (errorPopup != null) errorPopup.AddError(warnMsg);
+                }
+            }
+            else
+            {
+                // 단일 지정 (예: "0001-btn" 혹은 "0001")
+                if (!segment.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    result.Add($"{segment}-BTN");
+                }
+                else
+                {
+                    result.Add(segment);
+                }
+            }
+        }
+
+        return result;
     }
 
     /// <summary>

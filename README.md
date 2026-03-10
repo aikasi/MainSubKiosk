@@ -5,7 +5,7 @@
 
 ### **C. 3-2-2 , 3-2-1 진행 상황**
 
-[https://www.notion.so/C-3-2-2-3-2-1-31e8a32f6b6880ebaa3be9c595b60eaa?source=copy_link]([https://www.notion.so/C-3-2-2-3-2-1-31e8a32f6b6880ebaa3be9c595b60eaa?source=copy_link]())
+[https://www.notion.so/C-3-2-2-3-2-1-31e8a32f6b6880ebaa3be9c595b60eaa?source=copy_link](https://www.notion.so/C-3-2-2-3-2-1-31e8a32f6b6880ebaa3be9c595b60eaa?source=copy_link)
 
 ---
 

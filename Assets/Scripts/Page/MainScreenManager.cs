@@ -6,6 +6,7 @@ using UnityEngine.UI;
 /// 메인 화면의 버튼 바인딩과 클릭 이벤트를 관리합니다.
 /// ButtonBinder를 통해 외부 이미지를 로드하고,
 /// 각 버튼 클릭 시 PageNavigator를 통해 상세 페이지로 이동합니다.
+/// 클릭 시 On 상태로 전환, 로딩 완료 후 Off로 복원합니다.
 /// </summary>
 public class MainScreenManager : MonoBehaviour
 {
@@ -15,9 +16,11 @@ public class MainScreenManager : MonoBehaviour
     [Tooltip("PageNavigator 참조 (Inspector에서 연결)")]
     [SerializeField] private PageNavigator pageNavigator;
 
+    // 현재 On 상태인 버튼 인덱스 (-1이면 없음)
+    private int activeButtonIndex = -1;
+
     /// <summary>
     /// 메인 화면을 초기화합니다.
-    /// 버튼 이미지 바인딩 및 클릭 이벤트를 등록합니다.
     /// AppBootstrapper에서 호출됩니다.
     /// </summary>
     public async void InitializeAsync()
@@ -31,17 +34,14 @@ public class MainScreenManager : MonoBehaviour
         // 버튼 이미지 비동기 바인딩
         await buttonBinder.BindAllButtonsAsync();
 
-        // 클릭 이벤트 등록 (ButtonBinder의 버튼 리스트 사용)
+        // 클릭 이벤트 등록
         RegisterButtonEvents();
 
-        string msg = "[INFO] 메인 화면 초기화 완료";
-        Debug.Log(msg);
-
+        Debug.Log("[INFO] 메인 화면 초기화 완료");
     }
 
     /// <summary>
     /// 각 버튼에 클릭 이벤트를 등록합니다.
-    /// ButtonBinder의 버튼 리스트를 참조합니다.
     /// </summary>
     private void RegisterButtonEvents()
     {
@@ -52,14 +52,14 @@ public class MainScreenManager : MonoBehaviour
             Button btn = buttons[i];
             if (btn == null) continue;
 
-            int index = i; // 클로저 캡처용 로컬 변수
+            int index = i;
             btn.onClick.AddListener(() => OnButtonClicked(index));
         }
     }
 
     /// <summary>
     /// 버튼 클릭 시 호출됩니다.
-    /// 해당 아이템의 상세 페이지를 엽니다.
+    /// On 상태로 전환 후 상세 페이지를 엽니다.
     /// </summary>
     private void OnButtonClicked(int buttonIndex)
     {
@@ -69,10 +69,9 @@ public class MainScreenManager : MonoBehaviour
             return;
         }
 
-        // 광클/멀티터치 방어: 이미 상세 페이지가 열려있거나 전환 중이면 추가 클릭 무시
+        // 광클 방어: 이미 열려있거나 전환 중이면 무시
         if (pageNavigator.IsDetailOpen)
         {
-            Debug.Log("[INFO] 메인 화면: 상세 페이지가 이미 열려있어 추가 클릭을 무시합니다.");
             return;
         }
 
@@ -83,20 +82,33 @@ public class MainScreenManager : MonoBehaviour
             return;
         }
 
-        string msg = $"[INFO] 버튼 클릭: Button[{buttonIndex}] → 아이템 {itemId}";
-        Debug.Log(msg);
+        // 버튼 On 상태 전환 + 페이지 열기 (전환이 실제로 시작된 경우에만 On)
+        bool accepted = pageNavigator.OpenDetail(itemId);
+        if (accepted)
+        {
+            buttonBinder.SetButtonState(buttonIndex, true);
+            activeButtonIndex = buttonIndex;
+        }
 
-
-        pageNavigator.OpenDetail(itemId);
+        Debug.Log($"[INFO] 버튼 클릭: Button[{buttonIndex}] → 아이템 {itemId} (수락: {accepted})");
     }
 
     /// <summary>
-    /// 에러 로그를 기록합니다.
+    /// 상세 페이지 로딩이 완료되었거나 닫혔을 때 호출됩니다.
+    /// 활성화된 버튼을 Off 상태로 복원합니다.
+    /// PageNavigator에서 콜백으로 호출됩니다.
     /// </summary>
+    public void ResetActiveButton()
+    {
+        if (activeButtonIndex >= 0)
+        {
+            buttonBinder.SetButtonState(activeButtonIndex, false);
+            activeButtonIndex = -1;
+        }
+    }
+
     private void LogError(string message)
     {
-        string fullMsg = $"[ERROR] MainScreenManager: {message}";
-        Debug.LogError(fullMsg);
-
+        Debug.LogError($"[ERROR] MainScreenManager: {message}");
     }
 }

@@ -32,7 +32,7 @@ public class FixedButtonController : MonoBehaviour
             return;
         }
 
-        // 💡 Settings.txt에서 외부 버튼 키를 자동으로 가져오기
+        // Settings.txt에서 외부 버튼 키를 자동으로 가져오기
         string excludeRaw = AppConfig.ExcludeGridButtons;
         if (string.IsNullOrWhiteSpace(excludeRaw))
         {
@@ -40,7 +40,7 @@ public class FixedButtonController : MonoBehaviour
             return;
         }
 
-        // 첫 번째 키를 사용 (현재 앱은 외부 버튼 1개)
+        // 첫 번째 키를 사용
         buttonKey = excludeRaw.Split(';')[0].Trim();
 
         if (string.IsNullOrEmpty(buttonKey))
@@ -52,16 +52,28 @@ public class FixedButtonController : MonoBehaviour
         // 이미지 로딩 중 클릭 방지
         myButton.interactable = false;
 
-        // 🚨 버그 방어 1 (Race Condition): 메인 시스템(ResourcePathCache)이 윈도우 폴더 스캔을 다 끝낼 때까지 기다림
+        // ResourcePathCache 초기화 대기
         while (!resourcePathCache.IsInitialized)
         {
             await Task.Yield();
         }
 
-        // 2. 캐시 메모리에서 지정된 키의 실제 파일 경로를 조회
-        if (!resourcePathCache.TryGetPath(buttonKey, out string imagePath))
+        // 2. 캐시에서 지정된 키의 실제 파일 경로를 조회
+        // Settings.txt에 "0000", "0000_btn", "0000-btn" 등 어떤 값이 적혀있든 호환되도록 처리
+        string searchKey = buttonKey.ToLowerInvariant();
+        if (!searchKey.EndsWith("_btn") && !searchKey.EndsWith("_page"))
         {
-            Debug.LogError($"[ERROR] 시스템 오류: 화면 고정 버튼에 쓸 '{buttonKey}' 이미지를 찾을 수 없습니다.");
+            // 순수 숫자(예: "0000")만 적혀있다면 기본적으로 "_btn"을 붙여서 검색
+            searchKey = resourcePathCache.ExtractItemId(searchKey) + "_btn";
+        }
+        else if (searchKey.EndsWith("-btn"))
+        {
+            searchKey = resourcePathCache.ExtractItemId(searchKey) + "_btn";
+        }
+
+        if (!resourcePathCache.TryGetPath(searchKey, out string imagePath))
+        {
+            Debug.LogError($"[ERROR] 시스템 오류: 화면 고정 버튼에 쓸 '{searchKey}' (원본: {buttonKey}) 이미지를 찾을 수 없습니다.");
             return;
         }
 
@@ -81,7 +93,7 @@ public class FixedButtonController : MonoBehaviour
             }
             else
             {
-                Destroy(_loadedTexture); // Sprite 생성 실패 시 메모리 정리
+                Destroy(_loadedTexture);
                 _loadedTexture = null;
             }
         }
@@ -90,16 +102,11 @@ public class FixedButtonController : MonoBehaviour
             Debug.LogError($"[ERROR] '{buttonKey}' 버튼의 이미지를 화면에 불러오는 중 에러가 발생했습니다.");
         }
 
-        // 4. 클릭 시 대응하는 팝업 열기 이벤트 연결
-        // 🚨 버그 방어 2 (-PAGE 중복 이름 버그): 기존 시스템은 '0000' 만 받아서 뒤에 '-PAGE'를 직접 붙입니다.
-        // 따라서 '0000-BTN' 에서 '-BTN' 꼬리표를 떼어내서 순수 아이디(0000)만 추출해 전달해야 '0000-PAGE-PAGE' 버그가 생기지 않습니다.
-        string itemId = buttonKey.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase) 
-                        ? buttonKey.Substring(0, buttonKey.Length - 4) 
-                        : buttonKey;
-        
-        // 주의: AddListener 내부에서 즉시 사용할 수 있도록 지역 변수로 캡처
+        // 4. 클릭 이벤트 연결 — 아이템 ID 추출 (언더스코어 기준)
+        string itemId = resourcePathCache.ExtractItemId(buttonKey);
+
         string capturedItemId = itemId;
-        myButton.onClick.AddListener(() => 
+        myButton.onClick.AddListener(() =>
         {
             pageNavigator.OpenDetail(capturedItemId);
         });
@@ -111,7 +118,6 @@ public class FixedButtonController : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 씬 전환이나 오브젝트 파괴 시 메모리 누수 방지
         if (_loadedTexture != null)
         {
             Destroy(_loadedTexture);

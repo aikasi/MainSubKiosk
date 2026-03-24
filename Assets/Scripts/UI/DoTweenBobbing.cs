@@ -24,9 +24,13 @@ public class DoTweenBobbing : MonoBehaviour
     private RectTransform rectTransform;
     private Tweener bobbingTweener;
 
+    [Tooltip("애니메이션을 적용할 대상 (비워두면 자기 자신). Grid 하위 요소일 경우 자식(Inner) 객체를 타겟으로 지정하세요.")]
+    [SerializeField] private RectTransform targetRectTransform;
+
     private void Awake()
     {
-        rectTransform = GetComponent<RectTransform>();
+        // 타겟이 수동으로 지정되어 있지 않으면 자기 자신의 RectTransform 사용
+        rectTransform = targetRectTransform != null ? targetRectTransform : GetComponent<RectTransform>();
     }
 
     private void OnEnable()

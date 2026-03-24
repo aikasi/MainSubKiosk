@@ -71,8 +71,9 @@ public class IntegrityChecker : MonoBehaviour
                 CheckFile(btnKey, btnPath);
             }
 
-            // 대응하는 페이지 이미지 검사
-            string pageKey = resourcePathCache.GetPageKey(btnKey);
+            // 대응하는 페이지 이미지 검사 (0001_btn_off → 0001_page)
+            string itemId = resourcePathCache.ExtractItemId(btnKey);
+            string pageKey = itemId + "_page";
             if (resourcePathCache.TryGetPath(pageKey, out string pagePath))
             {
                 CheckFile(pageKey, pagePath);
@@ -115,6 +116,16 @@ public class IntegrityChecker : MonoBehaviour
     {
         var result = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
 
+        var excludedIds = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase);
+        string excludeRaw = AppConfig.ExcludeGridButtons;
+        if (!string.IsNullOrWhiteSpace(excludeRaw))
+        {
+            foreach (var ex in excludeRaw.Split(';'))
+            {
+                if (!string.IsNullOrWhiteSpace(ex)) excludedIds.Add(ExtractNumberPart(ex.Trim()));
+            }
+        }
+
         var segments = rawInput.Split(';')
             .Select(s => s.Trim())
             .Where(s => !string.IsNullOrEmpty(s));
@@ -130,11 +141,9 @@ public class IntegrityChecker : MonoBehaviour
                     string startRaw = parts[0].Trim();
                     string endRaw = parts[1].Trim();
 
-                    // "-btn" 꼬리가 붙어있을 수 있으므로 제거 후 파싱
-                    string startNumStr = startRaw.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase)
-                        ? startRaw.Substring(0, startRaw.Length - 4) : startRaw;
-                    string endNumStr = endRaw.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase)
-                        ? endRaw.Substring(0, endRaw.Length - 4) : endRaw;
+                    // "_btn" 또는 "_btn_off" 꼬리가 붙어있을 수 있으므로 제거 후 파싱
+                    string startNumStr = ExtractNumberPart(startRaw);
+                    string endNumStr = ExtractNumberPart(endRaw);
 
                     if (int.TryParse(startNumStr, out int startNum) && int.TryParse(endNumStr, out int endNum))
                     {
@@ -147,7 +156,7 @@ public class IntegrityChecker : MonoBehaviour
 
                         for (int i = min; i <= max; i++)
                         {
-                            result.Add($"{i.ToString($"D{padLength}")}-BTN");
+                            result.Add($"{i.ToString($"D{padLength}")}_btn_off");
                         }
                     }
                     else
@@ -166,14 +175,28 @@ public class IntegrityChecker : MonoBehaviour
             }
             else
             {
-                // 단일 지정 (예: "0001-btn" 혹은 "0001")
-                if (!segment.EndsWith("-btn", System.StringComparison.OrdinalIgnoreCase))
+                // 단일 지정 (예: "0001_btn_off" 혹은 "0001")
+                string cleaned = segment;
+                if (!cleaned.EndsWith("_btn_off", System.StringComparison.OrdinalIgnoreCase))
                 {
-                    result.Add($"{segment}-BTN");
+                    // 순수 숫자나 _btn만 있는 경우
+                    string numPart = ExtractNumberPart(cleaned);
+                    if (!string.IsNullOrEmpty(numPart))
+                    {
+                        // Settings.txt에서 Exclude된(단일 버튼) 대상이면 _btn, 아니면 _btn_off 
+                        if (excludedIds.Contains(numPart))
+                            result.Add($"{numPart}_btn");
+                        else
+                            result.Add($"{numPart}_btn_off");
+                    }
+                    else
+                    {
+                        result.Add(cleaned);
+                    }
                 }
                 else
                 {
-                    result.Add(segment);
+                    result.Add(cleaned);
                 }
             }
         }
@@ -223,5 +246,19 @@ public class IntegrityChecker : MonoBehaviour
             if (errorPopup != null) errorPopup.AddError(errDetail);
             errorCount++;
         }
+    }
+
+    /// <summary>
+    /// 문자열에서 접미사(_btn, _btn_off, _btn_on 등)를 제거하고 숫자 부분만 반환합니다.
+    /// </summary>
+    private string ExtractNumberPart(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return input;
+        string lower = input.ToLowerInvariant();
+        if (lower.EndsWith("_btn_off")) return input.Substring(0, input.Length - 8);
+        if (lower.EndsWith("_btn_on")) return input.Substring(0, input.Length - 7);
+        if (lower.EndsWith("_btn")) return input.Substring(0, input.Length - 4);
+        if (lower.EndsWith("-btn")) return input.Substring(0, input.Length - 4);
+        return input;
     }
 }

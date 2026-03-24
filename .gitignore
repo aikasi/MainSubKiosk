@@ -28,7 +28,7 @@
 
 # 콘텐츠 이미지 (현장별로 다르므로 git에 포함하지 않음)
 /[Aa]ssets/StreamingAssets/Content_*/
-
+/[Aa]ssets/Resources/Ref/*
 # =====================
 # IDE / 에디터
 # =====================

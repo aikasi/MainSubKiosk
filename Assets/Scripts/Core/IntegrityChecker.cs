@@ -85,6 +85,34 @@ public class IntegrityChecker : MonoBehaviour
 
                 if (errorPopup != null) errorPopup.AddError(warnMsg);
             }
+
+            // 대응하는 슬라이드쇼 이미지 검사 (0000 특별페이지 제외)
+            if (itemId != "0000")
+            {
+                List<string> slidePaths = resourcePathCache.GetSlideImagePaths(itemId);
+
+                // 1. 역대급 최소 1장 필수 누락 검사
+                if (slidePaths == null || slidePaths.Count == 0)
+                {
+                    string groupName = itemId.TrimStart('0');
+                    if (string.IsNullOrEmpty(groupName)) groupName = itemId;
+
+                    string warnMsg = $"Image 폴더 안에 '{groupName}'번 슬라이드 사진이 단 1장도 없습니다. 최소한 1장 이상의 사진 파일(예: {groupName}_1.png)이 필요합니다!";
+                    Debug.LogError($"[ERROR] {warnMsg}");
+                    if (errorPopup != null) errorPopup.AddError(warnMsg);
+                    errorCount++;
+                }
+                else
+                {
+                    // 2. 존재하는 슬라이드 사진 파일 무결성 우선 검사 (0바이트 손상 점검 등)
+                    foreach (string slidePath in slidePaths)
+                    {
+                        // CheckFile 함수 내에서 자동으로 0바이트 검사 및 에러 팝업 처리가 일어납니다.
+                        string slideFileName = Path.GetFileName(slidePath);
+                        CheckFile(slideFileName, slidePath);
+                    }
+                }
+            }
         }
 
         // 검사 결과 요약 로그

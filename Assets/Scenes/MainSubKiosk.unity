@@ -1907,6 +1907,7 @@ GameObject:
   - component: {fileID: 833520527}
   - component: {fileID: 833520526}
   - component: {fileID: 833520525}
+  - component: {fileID: 833520529}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -2015,6 +2016,24 @@ RectTransform:
   m_AnchoredPosition: {x: -54.5, y: -64.3}
   m_SizeDelta: {x: 589.4, y: 157.3}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &833520529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 833520524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5ce535036f7314e9a4d5a1a3225216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DoTweenBobbing
+  amplitude: 10
+  duration: 1.2
+  easeType: 7
+  randomStart: 1
+  isIndependentUpdate: 1
+  targetRectTransform: {fileID: 0}
 --- !u!1 &952509096
 GameObject:
   m_ObjectHideFlags: 0
@@ -3638,6 +3657,7 @@ GameObject:
   - component: {fileID: 1683732755}
   - component: {fileID: 1683732754}
   - component: {fileID: 1683732753}
+  - component: {fileID: 1683732756}
   m_Layer: 5
   m_Name: Detail2Button
   m_TagString: Untagged
@@ -3746,6 +3766,24 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1683732751}
   m_CullTransparentMesh: 1
+--- !u!114 &1683732756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1683732751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a5ce535036f7314e9a4d5a1a3225216, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DoTweenBobbing
+  amplitude: 10
+  duration: 1.2
+  easeType: 7
+  randomStart: 0
+  isIndependentUpdate: 1
+  targetRectTransform: {fileID: 0}
 --- !u!1 &1724604864
 GameObject:
   m_ObjectHideFlags: 0

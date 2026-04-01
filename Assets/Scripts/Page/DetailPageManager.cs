@@ -49,7 +49,6 @@ public class DetailPageManager : MonoBehaviour
 
     // ── 현재 로드된 리소스 추적 (②③계층) ──
     private Texture2D currentBackgroundTexture;
-    private readonly List<Texture2D> currentSlideTextures = new List<Texture2D>();
     private Texture2D specialBtnTexture; // 0000 페이지 이동 버튼용 캐싱 텍스처
 
     /// <summary>현재 상세 페이지가 표시 중인지 여부</summary>
@@ -215,11 +214,9 @@ public class DetailPageManager : MonoBehaviour
 
         // 이전 리소스를 임시 보관 (새 로드 완료 전까지 화면에 표시 유지)
         Texture2D oldBackground = currentBackgroundTexture;
-        List<Texture2D> oldSlides = new List<Texture2D>(currentSlideTextures);
 
         // 새 참조를 비워서 LoadContentAsync가 새 리소스를 할당하게 함
         currentBackgroundTexture = null;
-        currentSlideTextures.Clear();
 
         // 새 콘텐츠 로드
         string oldItemId = currentItemId;
@@ -229,65 +226,53 @@ public class DetailPageManager : MonoBehaviour
         // 탭 바 활성 탭 갱신
         if (tabBar != null) tabBar.SetActiveTabByItemId(newItemId);
 
-        // 이전 리소스 Destroy (새 로드 완료 후이므로 백지 현상 없음)
+        // 이전 배경 리소스 Destroy (슬라이드는 PhotoSlideshow가 자체 파기)
         DestroyTexture(ref oldBackground);
-        foreach (var tex in oldSlides)
-        {
-            Texture2D temp = tex;
-            DestroyTexture(ref temp);
-        }
 
         Debug.Log($"[INFO] 탭 전환 완료: {oldItemId} → {newItemId}");
     }
 
     /// <summary>
     /// 특정 아이템의 배경 + 슬라이드 이미지를 비동기 로드합니다.
+    /// 배경과 슬라이드 첫 장을 병렬로 로딩하여 화면 진입 속도를 최적화합니다.
     /// </summary>
     private async Task LoadContentAsync(string itemId)
     {
-        // 1. 배경 이미지 (_page.png) 로드
+        // 1. 배경 이미지 로딩 태스크 시작 (await 하지 않고 태스크만 먼저 실행)
+        Task<Texture2D> bgTask = null;
         string pageKey = itemId + "_page";
         if (resourcePathCache.TryGetPath(pageKey, out string pagePath))
         {
-            Texture2D bgTex = await imageLoader.LoadTextureAsync(pagePath);
-            if (bgTex != null)
-            {
-                currentBackgroundTexture = bgTex;
-                if (backgroundImage != null) backgroundImage.texture = bgTex;
-            }
+            bgTask = imageLoader.LoadTextureAsync(pagePath);
         }
         else
         {
             Debug.LogWarning($"[WARN] '{pageKey}' 배경 이미지를 찾을 수 없습니다.");
         }
 
-        // 2. 슬라이드쇼 이미지 (Image/X_*.png) 로드
+        // 2. 슬라이드쇼 첫 장 로딩도 동시에 시작 (배경과 병렬 실행)
         List<string> slidePaths = resourcePathCache.GetSlideImagePaths(itemId);
-        List<Texture2D> slideTexList = new List<Texture2D>();
-
-        var loadTasks = new List<Task<Texture2D>>();
-        foreach (string path in slidePaths)
+        Task slideshowTask = null;
+        if (slideshow != null && slidePaths.Count > 0)
         {
-            loadTasks.Add(imageLoader.LoadTextureAsync(path));
+            slideshowTask = slideshow.InitializeAsync(slidePaths, imageLoader);
         }
 
-        if (loadTasks.Count > 0)
+        // 3. 배경 이미지 결과 적용
+        if (bgTask != null)
         {
-            Texture2D[] results = await Task.WhenAll(loadTasks);
-            foreach (var tex in results)
+            Texture2D bgTex = await bgTask;
+            if (bgTex != null)
             {
-                if (tex != null)
-                {
-                    slideTexList.Add(tex);
-                    currentSlideTextures.Add(tex);
-                }
+                currentBackgroundTexture = bgTex;
+                if (backgroundImage != null) backgroundImage.texture = bgTex;
             }
         }
 
-        // 슬라이드쇼 시작
-        if (slideshow != null)
+        // 4. 슬라이드쇼 첫 장 로딩 완료 대기
+        if (slideshowTask != null)
         {
-            slideshow.Initialize(slideTexList);
+            await slideshowTask;
         }
     }
 
@@ -298,13 +283,7 @@ public class DetailPageManager : MonoBehaviour
         if (backgroundImage != null) backgroundImage.texture = null;
         DestroyTexture(ref currentBackgroundTexture);
 
-        // 슬라이드
-        foreach (var tex in currentSlideTextures)
-        {
-            Texture2D temp = tex;
-            DestroyTexture(ref temp);
-        }
-        currentSlideTextures.Clear();
+        // 슬라이드 리소스는 PhotoSlideshow.Stop() 실행 시 내부에서 파기됨
     }
 
     /// <summary>텍스처를 안전하게 파괴합니다.</summary>

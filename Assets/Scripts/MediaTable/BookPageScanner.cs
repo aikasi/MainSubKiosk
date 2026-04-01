@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-#if MEDIA_TABLE
-namespace MediaTable
-{
+
     /// <summary>
     /// 미디어 테이블 전용 다중 페이지 스캐너.
     /// 디스플레이(좌/우)와 무관하게 모든 폴더를 한번만 스캔하여 캐시처럼 작동합니다.
@@ -231,5 +229,3 @@ namespace MediaTable
             }
         }
     }
-}
-#endif

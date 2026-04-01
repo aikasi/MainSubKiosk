@@ -2,9 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
-#if MEDIA_TABLE
-namespace MediaTable
-{
     /// <summary>
     /// 실제 'Book - Page Curl' 에셋의 구조(Sprite[] bookPages)에 완벽히 호환되도록 수정한 메모리 관리자.
     /// 현재 페이지를 기준으로 전/후 스프레드(총 5~6장)의 Sprite만 생성하여 Book.bookPages 배열에 꽂아주고,
@@ -174,5 +171,3 @@ namespace MediaTable
             ClearAllTextures(null);
         }
     }
-}
-#endif

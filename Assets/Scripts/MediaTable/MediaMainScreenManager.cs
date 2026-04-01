@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,9 +6,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-#if MEDIA_TABLE
-namespace MediaTable
-{
     /// <summary>
     /// 미디어 테이블의 메인 화면 썸네일 버튼(-btn)들을 스캔하고, 화면에 생성하며,
     /// 터치 시 MediaBookManager를 호출하여 상세 책을 팝업 시키는 클래스입니다.
@@ -123,5 +121,4 @@ namespace MediaTable
             bookManager.OpenBook(itemId);
         }
     }
-}
-#endif
+

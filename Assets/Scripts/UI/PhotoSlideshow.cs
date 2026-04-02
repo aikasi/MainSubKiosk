@@ -281,7 +281,9 @@ public class PhotoSlideshow : MonoBehaviour
         {
             // 아직 로딩 중이라면 null이 들어가 빈 화면(또는 직전거) 상태로 잠깐 노출될 수 있음
             // 이는 광클 시 메모리 폭주를 막는 정상적인 Trade-off
-            displayImage.texture = loadedTextures[index];
+            Texture2D tex = loadedTextures[index];
+            displayImage.texture = tex;
+            UpdateAspectRatio(tex);
         }
     }
 
@@ -290,6 +292,21 @@ public class PhotoSlideshow : MonoBehaviour
     {
         if (prevButton != null) prevButton.gameObject.SetActive(visible);
         if (nextButton != null) nextButton.gameObject.SetActive(visible);
+    }
+
+    /// <summary>
+    /// 사진마다 높이가 다를 경우(예: 829 vs 914), 비율이 찌그러지지 않도록
+    /// AspectRatioFitter를 찾아 비율을 실시간으로 업데이트합니다.
+    /// </summary>
+    private void UpdateAspectRatio(Texture2D tex)
+    {
+        if (displayImage == null || tex == null) return;
+        
+        AspectRatioFitter fitter = displayImage.GetComponent<AspectRatioFitter>();
+        if (fitter != null)
+        {
+            fitter.aspectRatio = (float)tex.width / tex.height;
+        }
     }
 
     /// <summary>슬라이드쇼를 중지하고 모든 메모리를 강제 회수합니다.</summary>

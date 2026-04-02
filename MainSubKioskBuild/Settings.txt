@@ -1,4 +1,5 @@
 Idle_Timeout,60,화면 터치가 없을 때 메인 화면으로 돌아가는 시간 (초 단위)
+Target_Frame_Rate,60, 프레임 제한
 Transition_Speed,0.5,버튼을 누르거나 화면이 전환될 때의 애니메이션 속도 (초 단위)
 Resolution,1920x1080,프로그램이 실행될 때의 전체 화면 해상도 
 Target_Frame_Rate,60,앱의 최대 프레임 속도 제한 (기본 60, 높을수록 부드럽지만 PC 부하 증가)

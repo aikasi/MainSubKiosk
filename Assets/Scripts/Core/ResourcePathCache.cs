@@ -140,6 +140,11 @@ public class ResourcePathCache : MonoBehaviour
 
             string groupKey = fileName.Substring(0, underscoreIdx);
 
+            // 그룹 키 정규화: "0001" → "1", "0006" → "6" (앞의 0 제거)
+            // GetSlideImagePaths()에서 itemId를 TrimStart('0')로 조회하므로 동일한 변환 적용
+            groupKey = groupKey.TrimStart('0');
+            if (string.IsNullOrEmpty(groupKey)) groupKey = "0"; // "0000"의 경우
+
             if (!slideCache.ContainsKey(groupKey))
                 slideCache[groupKey] = new List<string>();
 
